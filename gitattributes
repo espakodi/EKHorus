@@ -1,0 +1,9 @@
+# El md5 se calcula sobre los bytes exactos de addons.xml; git no debe
+# convertir sus saltos de linea o la verificacion del repo fallaria en Kodi.
+addons.xml      -text
+addons.xml.md5  -text
+
+# Binarios: sin conversion de fin de linea
+*.zip  binary
+*.png  binary
+*.jpg  binary
