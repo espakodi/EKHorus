@@ -1,0 +1,1380 @@
+<!DOCTYPE html>
+<html lang="es" data-palette="teal">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EKHorus · Guía de AceStream y AceServe</title>
+  <meta name="description" content="Guía completa de EKHorus para Kodi. Cómo instalarlo y usarlo en Android, Fire TV, Windows, LibreELEC o Raspberry, con AceServe, VLC o un motor remoto. Qué es el motor AceStream, motor interno y externo, para qué sirven la IP y el puerto, el menú principal, la descarga de APKs, diagnóstico y preguntas frecuentes.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='10' fill='%23136b5e'/%3E%3Cpath d='M8 19c4-5.5 8-8 12-8s8 2.5 12 8c-4 5.5-8 8-12 8s-8-2.5-12-8z' fill='none' stroke='%23fff' stroke-width='2.2'/%3E%3Ccircle cx='20' cy='19' r='3.6' fill='%23fff'/%3E%3Cpath d='M25 26l4.5 6M14 27c-1.5 2-3.5 3-6 3' fill='none' stroke='%23fff' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap">
+  <script>
+    /* Aplica tema y paleta guardados antes del primer pintado, para no ver un destello del tema contrario. */
+    (function () {
+      try {
+        var t = localStorage.getItem('theme');
+        if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', t);
+        var p = localStorage.getItem('palette');
+        if (['teal', 'indigo', 'burgundy', 'forest', 'terracotta'].indexOf(p) >= 0) document.documentElement.setAttribute('data-palette', p);
+        var a = JSON.parse(localStorage.getItem('a11y') || '[]');
+        for (var i = 0; i < a.length; i++) document.documentElement.classList.add(a[i]);
+      } catch (e) { /* sin persistencia */ }
+    })();
+  </script>
+  <style>
+    /* ===== Tokens base (tema claro), compartidos con espatv.github.io y espakodi.github.io/apk ===== */
+    :root {
+      --bg: #f5f4f1;
+      --surface: #ffffff;
+      --surface-2: #ecebe6;
+      --code-bg: #edece7;
+      --text: #22251f;
+      --text-soft: #565a52;
+      --text-mute: #8c8e85;
+      --border: #e3e1d9;
+      --shadow: 0 1px 2px rgba(28, 30, 26, .06), 0 8px 24px rgba(28, 30, 26, .08);
+      --shadow-lg: 0 10px 30px rgba(28, 30, 26, .16);
+      --on-primary: #ffffff;
+      --radius: 16px;
+      --maxw: 980px;
+    }
+
+    [data-theme="dark"] {
+      --bg: #191b18;
+      --surface: #212420;
+      --surface-2: #2b2e29;
+      --code-bg: #282b26;
+      --text: #e9e8e2;
+      --text-soft: #abaca3;
+      --text-mute: #7f817a;
+      --border: #33352f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 10px 28px rgba(0, 0, 0, .4);
+      --shadow-lg: 0 10px 30px rgba(0, 0, 0, .55);
+      --on-primary: #11201c;
+    }
+
+    html[data-palette="teal"]       { --primary: #136b5e; --primary-strong: #0e564c; --primary-soft: #e4efec; --hero: #114a43; --hero-accent: #9ae9d9; }
+    html[data-palette="indigo"]     { --primary: #37548f; --primary-strong: #2b4373; --primary-soft: #e7eaf3; --hero: #283c6e; --hero-accent: #b4c9ff; }
+    html[data-palette="burgundy"]   { --primary: #8a3144; --primary-strong: #6f2737; --primary-soft: #f3e6e9; --hero: #5e2330; --hero-accent: #ffb8c5; }
+    html[data-palette="forest"]     { --primary: #356b3f; --primary-strong: #2a5532; --primary-soft: #e6efe5; --hero: #274a2c; --hero-accent: #a3e9ae; }
+    html[data-palette="terracotta"] { --primary: #a85534; --primary-strong: #8a4429; --primary-soft: #f5e9e2; --hero: #7a3d24; --hero-accent: #ffc4ab; }
+
+    html[data-theme="dark"][data-palette="teal"]       { --primary: #58b4a4; --primary-strong: #74c4b6; --primary-soft: #17302c; }
+    html[data-theme="dark"][data-palette="indigo"]     { --primary: #90a1d6; --primary-strong: #aab6df; --primary-soft: #1f2438; }
+    html[data-theme="dark"][data-palette="burgundy"]   { --primary: #cf7b8b; --primary-strong: #dc97a4; --primary-soft: #321c21; }
+    html[data-theme="dark"][data-palette="forest"]     { --primary: #6fb277; --primary-strong: #8bc391; --primary-soft: #1b2c1d; }
+    html[data-theme="dark"][data-palette="terracotta"] { --primary: #d68f6b; --primary-strong: #e0a484; --primary-soft: #2e2018; }
+
+    /* ===== Accesibilidad: alto contraste ===== */
+    html.a11y-contrast {
+      --bg: #ffffff; --surface: #ffffff; --surface-2: #ffffff; --code-bg: #ffffff;
+      --text: #000000; --text-soft: #1a1a1a; --text-mute: #333333; --border: #000000;
+      --primary: #00564a; --primary-strong: #003d34; --primary-soft: #ffffff;
+      --on-primary: #ffffff; --hero: #003d34; --hero-accent: #ffffff; --shadow: none; --shadow-lg: none;
+    }
+    html.a11y-contrast[data-theme="dark"] {
+      --bg: #000000; --surface: #000000; --surface-2: #000000; --code-bg: #000000;
+      --text: #ffffff; --text-soft: #ffffff; --text-mute: #dddddd; --border: #ffffff;
+      --primary: #6ee7d4; --primary-strong: #9af0e2; --primary-soft: #000000;
+      --on-primary: #000000; --hero: #000000; --hero-accent: #6ee7d4;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      font-family: "Outfit", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    .wrap { width: 100%; max-width: var(--maxw); margin-inline: auto; padding-inline: 22px; }
+    a { color: var(--primary-strong); }
+
+    code {
+      font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+      font-size: .88em;
+      background: var(--code-bg);
+      border-radius: 6px;
+      padding: 1px 6px;
+      word-break: break-word;
+    }
+
+    /* ===== Cabecera ===== */
+    .site-header {
+      position: sticky; top: 0; z-index: 20;
+      background: var(--surface);
+      background: color-mix(in srgb, var(--surface) 86%, transparent);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+    }
+    @supports not (backdrop-filter: blur(1px)) {
+      .site-header { background: var(--surface); }
+    }
+    .header-inner { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 12px; }
+
+    .brand { display: flex; align-items: center; gap: 12px; user-select: none; text-decoration: none; color: var(--text); }
+    .brand-logo { display: block; width: 40px; height: 40px; border-radius: 10px; flex: 0 0 auto; }
+    .brand-text { display: flex; flex-direction: column; line-height: 1.2; }
+    .brand-text strong { font-size: 1.18rem; font-weight: 700; letter-spacing: -.01em; }
+    .brand-text small { color: var(--text-soft); font-size: .78rem; }
+
+    .header-tools { display: flex; align-items: center; gap: 8px; }
+    .tool-wrap { position: relative; }
+
+    .icon-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 42px; height: 42px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      transition: border-color .15s ease, background .15s ease, color .15s ease;
+    }
+    .icon-btn:hover { border-color: var(--primary); color: var(--primary-strong); }
+    .icon-btn svg { width: 20px; height: 20px; }
+    .icon-btn[aria-expanded="true"] { border-color: var(--primary); background: var(--primary-soft); }
+
+    .ic-sun { display: none; }
+    [data-theme="dark"] .ic-sun { display: block; }
+    [data-theme="dark"] .ic-moon { display: none; }
+
+    /* ===== Popovers (paleta y accesibilidad) ===== */
+    .popover {
+      position: absolute; right: 0; top: calc(100% + 8px);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: var(--shadow-lg);
+      padding: 10px;
+      z-index: 30;
+      min-width: 190px;
+    }
+    .popover-wide { display: flex; flex-direction: column; gap: 6px; }
+    .popover[hidden] { display: none; }
+    .popover-title { margin: 2px 4px 6px; font-size: .72rem; text-transform: uppercase; letter-spacing: .1em; color: var(--text-mute); }
+
+    .swatch {
+      display: flex; align-items: center; gap: 10px; width: 100%;
+      border: 1px solid transparent; border-radius: 10px;
+      background: transparent; color: var(--text);
+      padding: 8px 10px; font: inherit; font-size: .9rem; cursor: pointer; text-align: left;
+    }
+    .swatch:hover { background: var(--surface-2); }
+    .swatch[aria-checked="true"] { border-color: var(--primary); background: var(--primary-soft); font-weight: 600; }
+    .swatch .dot { width: 18px; height: 18px; border-radius: 50%; flex: 0 0 auto; box-shadow: inset 0 0 0 1px rgba(0,0,0,.12); }
+    .swatch .check { margin-left: auto; opacity: 0; }
+    .swatch .check svg { width: 16px; height: 16px; display: block; }
+    .swatch[aria-checked="true"] .check { opacity: 1; color: var(--primary-strong); }
+
+    .chip-toggle {
+      border: 1px solid var(--border); background: var(--surface); color: var(--text);
+      border-radius: 10px; padding: 9px 12px; font: inherit; font-size: .88rem;
+      cursor: pointer; text-align: left;
+    }
+    .chip-toggle:hover { border-color: var(--primary); }
+    .chip-toggle[aria-pressed="true"] { background: var(--primary); border-color: var(--primary); color: var(--on-primary); font-weight: 600; }
+
+    /* ===== Héroe ===== */
+    .hero {
+      background: var(--hero);
+      color: #fff;
+      padding-block: 58px 52px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+    .hero .eyebrow {
+      margin: 0 0 12px; text-transform: uppercase; letter-spacing: .16em;
+      font-size: .74rem; font-weight: 700; color: var(--hero-accent);
+    }
+    .hero h1 { margin: 0 0 14px; font-size: clamp(1.9rem, 5vw, 2.8rem); font-weight: 800; letter-spacing: -.025em; line-height: 1.08; color: #fff; }
+    .hero-sub { margin: 0 auto; max-width: 720px; color: rgba(255, 255, 255, .85); font-size: 1.04rem; }
+    .hero-sub strong { color: #fff; }
+
+    /* ===== Índice ===== */
+    .toc { display: flex; flex-wrap: wrap; justify-content: center; gap: 9px; margin-top: 28px; }
+    .toc a {
+      display: inline-block; padding: 7px 15px; border-radius: 999px;
+      background: rgba(255, 255, 255, .1); border: 1px solid rgba(255, 255, 255, .26);
+      color: #fff; text-decoration: none; font-size: .84rem; font-weight: 600;
+      transition: background .15s ease;
+    }
+    .toc a:hover { background: rgba(255, 255, 255, .22); }
+
+    /* ===== Secciones ===== */
+    .section { padding-block: 38px; }
+    .section h2 { font-size: 1.5rem; font-weight: 700; letter-spacing: -.015em; margin: 0 0 8px; }
+    .section h3 { font-size: 1.12rem; font-weight: 700; margin: 26px 0 10px; }
+    .section-intro { margin: 0 0 20px; color: var(--text-soft); max-width: 780px; }
+    .section p { margin: 0 0 12px; }
+    .section ul, .section ol { margin: 0 0 12px; padding-left: 1.25em; }
+    .section li { margin-bottom: 6px; }
+
+    .num { color: var(--primary-strong); }
+
+    /* ===== Tarjetas ===== */
+    .cards { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); margin-bottom: 18px; }
+    .card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      box-shadow: var(--shadow); padding: 22px;
+    }
+    .card h3 { display: flex; align-items: center; gap: 10px; margin: 0 0 12px; font-size: 1.08rem; }
+    .card h3 svg { width: 22px; height: 22px; color: var(--primary-strong); flex: 0 0 auto; }
+    .card p { margin: 0 0 10px; }
+    .card p:last-child { margin-bottom: 0; }
+    .card .card-label { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--text-mute); display: block; margin-bottom: 2px; }
+
+    .panel {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 22px; margin-bottom: 18px;
+    }
+    .panel > :last-child { margin-bottom: 0; }
+    .panel h3:first-child { margin-top: 0; }
+
+    /* ===== Tablas ===== */
+    .table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 18px; }
+    table { border-collapse: collapse; width: 100%; min-width: 560px; font-size: .93rem; }
+    th, td { text-align: left; vertical-align: top; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+    tr:last-child td { border-bottom: none; }
+    th { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--text-mute); background: var(--surface-2); white-space: nowrap; }
+    td:first-child { font-weight: 600; }
+
+    /* ===== Bloques de código / URL ===== */
+    .code-block {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 14px; border: 1px dashed var(--primary); border-radius: 12px; background: var(--primary-soft);
+      margin: 0 0 12px;
+    }
+    .code-block code {
+      background: transparent; padding: 0; margin: 0;
+      font-size: .86rem; font-weight: 600; color: var(--primary-strong);
+      overflow-x: auto; white-space: nowrap; flex: 1; scrollbar-width: thin;
+    }
+
+    .btn-copy {
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      border: 1px solid var(--border); background: var(--surface); color: var(--text);
+      border-radius: 9px; padding: 6px 9px; font: inherit; font-size: .78rem; cursor: pointer; white-space: nowrap;
+    }
+    .btn-copy:hover { border-color: var(--primary); color: var(--primary-strong); }
+    .btn-copy svg { width: 15px; height: 15px; }
+
+    /* ===== Avisos ===== */
+    .callout { border-left: 3px solid var(--primary); background: var(--primary-soft); padding: 12px 16px; border-radius: 8px; color: var(--text); margin: 0 0 12px; }
+    .callout strong:first-child { color: var(--primary-strong); }
+
+    /* ===== Acordeones (escenarios y FAQ) ===== */
+    .guide-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 12px; }
+    .guide-item > summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 12px; padding: 16px 20px; font-weight: 600; }
+    .guide-item > summary::-webkit-details-marker { display: none; }
+    .guide-item > summary svg { width: 22px; height: 22px; color: var(--primary-strong); flex: 0 0 auto; }
+    .guide-item > summary::after { content: ""; margin-left: auto; width: 9px; height: 9px; flex: 0 0 auto; border-right: 2px solid var(--text-mute); border-bottom: 2px solid var(--text-mute); transform: rotate(-45deg); transition: transform .15s ease; }
+    .guide-item[open] > summary::after { transform: rotate(45deg); }
+    .guide-body { padding: 0 20px 20px; color: var(--text); }
+    .guide-body p { margin: 0 0 10px; }
+    .guide-body ol, .guide-body ul { margin: 0 0 10px; padding-left: 1.25em; }
+    .guide-body li { margin-bottom: 6px; }
+    .guide-body > :last-child { margin-bottom: 0; }
+    .guide-body .table-wrap { margin-top: 4px; }
+
+    /* ===== Resumen ===== */
+    .summary-card { border-color: var(--primary); box-shadow: var(--shadow-lg); }
+    .summary-card ol { margin: 0; padding-left: 1.3em; }
+    .summary-card li { margin-bottom: 10px; }
+    .summary-card li:last-child { margin-bottom: 0; }
+
+    /* ===== Footer ===== */
+    .site-footer { border-top: 1px solid var(--border); background: var(--surface); padding-block: 30px; margin-top: 40px; color: var(--text-soft); font-size: .88rem; text-align: center; }
+    .site-footer p { margin: 0 0 6px; }
+    .site-footer p:last-child { margin: 0; }
+
+    /* ===== Toast ===== */
+    .toast {
+      position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%) translateY(12px);
+      background: var(--text); color: var(--bg); padding: 11px 20px; border-radius: 999px;
+      font-size: .86rem; font-weight: 600; box-shadow: var(--shadow-lg);
+      opacity: 0; transition: opacity .2s ease, transform .2s ease; pointer-events: none; z-index: 40;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ===== Accesibilidad: texto ===== */
+    html.a11y-large { font-size: 118.75%; }
+    html.a11y-bold, html.a11y-bold body { font-weight: 600; }
+    html.a11y-bold .hero h1, html.a11y-bold .section h2 { font-weight: 900; }
+    html.a11y-upper body { text-transform: uppercase; }
+    html.a11y-upper button, html.a11y-upper a, html.a11y-upper input, html.a11y-upper summary { text-transform: uppercase; }
+    html.a11y-upper code { text-transform: none; }
+
+    /* ===== Foco visible para teclado ===== */
+    a:focus-visible, button:focus-visible, summary:focus-visible, .swatch:focus-visible, details > summary:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+      border-radius: 8px;
+    }
+    .hero a:focus-visible, .hero button:focus-visible { outline-color: var(--hero-accent); }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      * { transition: none !important; }
+    }
+
+    @media (max-width: 560px) {
+      .hero { padding-top: 36px; }
+      .brand-text small { display: none; }
+      .code-block { flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="https://espatv.github.io/" aria-label="EspaKodi, ir a la página principal">
+        <svg class="brand-logo" viewBox="0 0 40 40" aria-hidden="true">
+          <rect width="40" height="40" rx="10" fill="var(--primary)"/>
+          <path d="M8 19c4-5.5 8-8 12-8s8 2.5 12 8c-4 5.5-8 8-12 8s-8-2.5-12-8z" fill="none" stroke="var(--on-primary)" stroke-width="2.2"/>
+          <circle cx="20" cy="19" r="3.6" fill="var(--on-primary)"/>
+          <path d="M25 26l4.5 6M14 27c-1.5 2-3.5 3-6 3" fill="none" stroke="var(--on-primary)" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+        <span class="brand-text">
+          <strong>EKHorus</strong>
+          <small>Guía de configuración · EspaKodi</small>
+        </span>
+      </a>
+
+      <div class="header-tools">
+        <div class="tool-wrap">
+          <button id="palette-btn" class="icon-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="palette-pop" aria-label="Cambiar paleta de color" title="Paleta de color">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="9.5"/>
+              <circle cx="12" cy="7" r="1.1" fill="currentColor"/>
+              <circle cx="16.5" cy="10" r="1.1" fill="currentColor"/>
+              <circle cx="15" cy="15.5" r="1.1" fill="currentColor"/>
+              <circle cx="8" cy="14" r="1.1" fill="currentColor"/>
+            </svg>
+          </button>
+          <div id="palette-pop" class="popover" role="menu" hidden></div>
+        </div>
+
+        <button id="theme-btn" class="icon-btn" type="button" aria-label="Cambiar tema" title="Tema claro u oscuro">
+          <svg class="ic-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+          <svg class="ic-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"/>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+          </svg>
+        </button>
+
+        <div class="tool-wrap">
+          <button id="a11y-btn" class="icon-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="a11y-panel" aria-label="Opciones de accesibilidad" title="Accesibilidad">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="9.5"/>
+              <circle cx="12" cy="7" r="1.2" fill="currentColor"/>
+              <path d="M6.5 9.5h11M12 9.7V14M12 14l-2.4 4M12 14l2.4 4"/>
+            </svg>
+          </button>
+          <div id="a11y-panel" class="popover popover-wide" role="menu" hidden>
+            <p class="popover-title">Accesibilidad</p>
+            <button class="chip-toggle" type="button" data-a11y="a11y-contrast" aria-pressed="false">Alto contraste</button>
+            <button class="chip-toggle" type="button" data-a11y="a11y-bold" aria-pressed="false">Negrita</button>
+            <button class="chip-toggle" type="button" data-a11y="a11y-large" aria-pressed="false">Texto más grande</button>
+            <button class="chip-toggle" type="button" data-a11y="a11y-upper" aria-pressed="false">Mayúsculas</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="wrap">
+      <p class="eyebrow">Guía de configuración</p>
+      <h1>EKHorus, AceStream y AceServe</h1>
+      <p class="hero-sub">Cómo montarlo en cada aparato, desde AceServe en un Fire TV hasta AceStream con VLC o un motor compartido en la red local. Y, para cuando algo falla, qué papel cumple el motor AceStream, qué diferencia hay entre el motor interno y uno externo, y para qué sirven la IP y el puerto.</p>
+      <nav class="toc" aria-label="Índice de la guía">
+        <a href="#piezas">Las piezas</a>
+        <a href="#escenarios">Escenarios</a>
+        <a href="#motor">Interno y externo</a>
+        <a href="#ip-puerto">IP y puerto</a>
+        <a href="#ajustes">Ajustes</a>
+        <a href="#uso">Menú principal</a>
+        <a href="#diagnostico">Diagnóstico</a>
+        <a href="#faq">Preguntas frecuentes</a>
+        <a href="#resumen">Importante</a>
+        <a href="#novedades">Novedades</a>
+      </nav>
+    </div>
+  </section>
+
+  <main class="wrap">
+
+    <!-- ===== 1. Las piezas ===== -->
+    <section id="piezas" class="section" aria-labelledby="piezas-title">
+      <h2 id="piezas-title"><span class="num">1.</span> Qué es cada cosa</h2>
+      <p class="section-intro">La mayoría de los problemas de configuración nacen del mismo malentendido, así que conviene aclararlo desde el principio. Aquí intervienen dos programas distintos, no uno.</p>
+
+      <div class="cards">
+        <article class="card">
+          <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            El enlace AceStream
+          </h3>
+          <p><span class="card-label">Qué es</span>Un código de 40 caracteres hexadecimales (<code>a0270364634d9c49279ba61ae3d8467809fb7095</code>), a veces escrito como <code>acestream://a027...</code>. También puede ser un <code>infohash</code>, un enlace <code>magnet:</code> o un archivo <code>.torrent</code>.</p>
+          <p><span class="card-label">Qué hace</span>Identifica el contenido dentro de la red P2P. Por sí solo no es reproducible; no apunta a ningún servidor de vídeo.</p>
+        </article>
+
+        <article class="card">
+          <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            El motor AceStream <em>(engine)</em>
+          </h3>
+          <p><span class="card-label">Qué es</span>Un programa independiente. Puede ser AceStream Media en Windows, el paquete snap en Ubuntu, la app Ace Stream en Android, AceServe o un contenedor Docker.</p>
+          <p><span class="card-label">Qué hace</span>Hace todo el trabajo. Se conecta a la red P2P, descarga el contenido de otros usuarios, lo reensambla y lo sirve como vídeo convencional por HTTP en <code>http://IP:6878/...</code></p>
+        </article>
+
+        <article class="card">
+          <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+            EKHorus
+          </h3>
+          <p><span class="card-label">Qué es</span>El addon de Kodi (basado en Horus) adaptado a EspaKodi.</p>
+          <p><span class="card-label">Qué hace</span>No reproduce nada por sí mismo y no incluye ningún canal. Actúa de intermediario. Pide el enlace al motor, espera a que el stream arranque, pasa el vídeo resultante al reproductor de Kodi y muestra las estadísticas.</p>
+        </article>
+      </div>
+
+      <p>El motor convierte un enlace P2P en una dirección de vídeo normal, y EKHorus se comunica con él por HTTP. Por eso EKHorus necesita saber en qué dirección IP y en qué puerto está escuchando el motor. Es lo único que necesita saber de él. Si en esa dirección responde un motor, todo funciona. Si no responde nadie, aparece el error <strong>"Engine no iniciado"</strong>.</p>
+      <p>Ese motor lo puede instalar y arrancar el propio EKHorus, y entonces se habla de motor interno, o puede estar ya en marcha por su cuenta, y entonces es un motor externo. Cuál de los dos toca no se elige, depende del aparato, y la sección 3 lo explica en detalle.</p>
+
+      <details class="guide-item">
+        <summary>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          <span>Qué hace EKHorus por dentro</span>
+        </summary>
+        <div class="guide-body">
+          <p>Cuando se reproduce un enlace ocurre lo siguiente:</p>
+          <ol>
+            <li>EKHorus pregunta a <code>http://IP:PUERTO/webui/api/service?method=get_version</code> si hay un motor en esa dirección.</li>
+            <li>Si no lo hay y el motor es interno, lo arranca él mismo y espera durante el tiempo del ajuste <em>Tiempo máximo para abrir el motor</em>.</li>
+            <li>Pide el stream con <code>http://IP:PUERTO/ace/getstream?id=EL_ID&amp;format=json</code> (o con <code>manifest.m3u8</code> si se trata de un infohash, un magnet o una URL).</li>
+            <li>El motor devuelve tres direcciones, una para el vídeo, otra para las estadísticas y otra para los comandos.</li>
+            <li>Kodi reproduce la dirección del vídeo mientras EKHorus consulta las estadísticas cada segundo. De ahí sale el panel con la velocidad, las semillas y el estado del búfer.</li>
+            <li>Al parar la reproducción, EKHorus envía al motor la orden de detener el stream y borra la caché que este ha dejado en el disco.</li>
+          </ol>
+          <p>Todo esto son peticiones HTTP corrientes contra la dirección configurada. No hay nada más.</p>
+        </div>
+      </details>
+    </section>
+
+    <!-- ===== 2. Escenarios ===== -->
+    <section id="escenarios" class="section" aria-labelledby="escenarios-title">
+      <h2 id="escenarios-title"><span class="num">2.</span> Lugares donde se puede instalar y formas de usarlo</h2>
+      <p class="section-intro">Ocho montajes habituales, empezando por Android, que es el más extendido. Cada uno se despliega por separado. Con seguir los pasos del que corresponda basta para tenerlo funcionando; las secciones 3 y 4 explican el porqué de cada cosa, y son las que hay que leer cuando algo no sale a la primera.</p>
+
+      <details class="guide-item" open>
+        <summary>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="14" rx="2.5"/><polyline points="8 21 12 17 16 21"/></svg>
+          <span>A) Android o Android TV con la app oficial Ace Stream</span>
+        </summary>
+        <div class="guide-body">
+          <p>En Android EKHorus no puede arrancar el motor por su cuenta, porque el sistema no lo permite. Lo que hace es abrir la app correspondiente.</p>
+          <ol>
+            <li>Instala la app Ace Stream en el mismo aparato. Lo más cómodo es hacerlo desde el propio EKHorus, en <em>Descargar APKs</em> (sección 6). También puedes instalarla por tu cuenta si prefieres otra versión.</li>
+            <li>En los ajustes de EKHorus, en <em>Motor ace</em>, deja seleccionada la opción <code>org.acestream.----</code>, que corresponde a la app oficial.</li>
+            <li>IP <code>127.0.0.1</code> y puerto <code>6878</code>.</li>
+            <li>Al reproducir, EKHorus preguntará si quieres que abra el motor. Acepta y se abrirá la app de AceStream. Cuando el motor esté iniciado, vuelve a Kodi con el botón Atrás; EKHorus sigue esperando y continuará solo.</li>
+            <li>Si la app de AceStream queda abierta en segundo plano, ese diálogo no vuelve a aparecer.</li>
+          </ol>
+          <p>En Fire TV y Fire Stick el procedimiento es el mismo, porque Fire OS es Android. La app de AceStream no está en la tienda de Amazon, pero se descarga desde <em>Descargar APKs</em> dentro del propio EKHorus, sin necesidad de Downloader ni de pasar ficheros al aparato. Una vez instalada, todo funciona igual que en cualquier Android TV.</p>
+        </div>
+      </details>
+
+      <details class="guide-item">
+        <summary>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2.5"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+          <span>B) Android con AceServe (org.free.aceserve)</span>
+        </summary>
+        <div class="guide-body">
+          <p>AceServe es un motor AceStream para Android planteado como servidor y no como reproductor. Se queda en segundo plano, escucha en el puerto 6878, no tiene publicidad, puede arrancar con el sistema y trae su propia interfaz web. Es la opción preferida de muchos usuarios de televisores Android porque se comporta como el motor de Linux; una vez encendido, todo va por HTTP y no hay que saltar entre aplicaciones.</p>
+          <ol>
+            <li>Instala AceServe desde <em>Descargar APKs</em>, en el propio EKHorus (sección 6), y ábrelo una vez para que arranque el servicio. Si trae la opción de autoarranque, actívala.</li>
+            <li>En los ajustes de EKHorus, en <em>Motor ace</em>, selecciona <code>org.free.aceserve</code>.</li>
+            <li>IP <code>127.0.0.1</code> y puerto <code>6878</code>, puesto que corre en el mismo aparato.</li>
+            <li>Reproduce con normalidad.</li>
+          </ol>
+          <p>El ajuste <em>Motor ace</em> no es decorativo. Cambia dos cosas concretas. La primera, cómo se abre el motor cuando no está en marcha, porque cada app requiere una llamada distinta del sistema. La segunda, en qué carpeta se limpia la caché al terminar (<code>/storage/emulated/0/org.free.aceserve/files/.ACEStream/</code> en AceServe y otra ruta en la app oficial). Si el ajuste no coincide con la app instalada, la caché no se limpia y el almacenamiento se va llenando.</p>
+        </div>
+      </details>
+
+      <details class="guide-item">
+        <summary>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="4" width="19" height="13" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          <span>C) Windows, la opción más sencilla (motor interno)</span>
+        </summary>
+        <div class="guide-body">
+          <ol>
+            <li>Instala EKHorus desde el repositorio.</li>
+            <li>Ábrelo. La primera vez descargará el motor automáticamente.</li>
+            <li>Comprueba los ajustes. IP <code>127.0.0.1</code>, puerto <code>6878</code>, sin tocar nada más.</li>
+            <li>Entra en <em>Reproducir identificador Acestream</em>, pega un ID y espera a que cargue.</li>
+          </ol>
+          <p>Si Windows Defender u otro antivirus bloquea <code>ace_engine.exe</code>, habrá que añadir una exclusión; de lo contrario el motor no arrancará nunca.</p>
+        </div>
+      </details>
+
+      <details class="guide-item">
+        <summary>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="4" width="19" height="13" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/><circle cx="18" cy="8" r="1.4" fill="currentColor" stroke="none"/></svg>
+          <span>D) Windows con AceStream Media ya instalado (motor externo local)</span>
+        </summary>
+        <div class="guide-body">
+          <p>Para usar la instalación oficial en lugar del motor que descarga el addon:</p>
+          <ol>
+            <li>Arranca AceStream Media (o su <em>Engine</em>) antes de abrir el enlace en Kodi. Su icono aparece en la bandeja del sistema.</li>
+            <li>En EKHorus, IP <code>127.0.0.1</code> y puerto <code>6878</code>. Al detectar un motor ya en marcha, el addon lo usará sin arrancar el suyo.</li>
+            <li>Puedes cerrarlo a mano o desde la entrada <em>Detener motor Acestream</em> del menú del addon. Ten en cuenta que el ajuste <em>Detener el Motor Acestream automáticamente</em>, si está activado, también cerrará este motor al terminar, porque el cierre se hace por nombre de proceso.</li>
+          </ol>
+        </div>
+      </details>
+
+      <details class="guide-item">
+        <summary>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="7" rx="2"/><rect x="2" y="14" width="20" height="7" rx="2"/><line x1="6" y1="6.5" x2="6.01" y2="6.5"/><line x1="6" y1="17.5" x2="6.01" y2="17.5"/></svg>
+          <span>E) Motor en otro equipo (PC, NAS, Docker) y Kodi en el televisor</span>
+        </summary>
+        <div class="guide-body">
+          <p>Es el montaje que mejor rinde en aparatos poco potentes.</p>
+          <ol>
+            <li>En la máquina que hará de servidor, arranca el motor y asegúrate de que escucha en la red.
+              <ul>
+                <li>En Docker, la vía más limpia es <code>docker run -d --name acestream -p 6878:6878 vstavrinov/acestream-engine</code>.</li>
+                <li>En Windows o Linux nativo basta con arrancar el motor y abrir el puerto 6878 en el cortafuegos.</li>
+              </ul>
+            </li>
+            <li>Averigua la IP de esa máquina con <code>ipconfig</code> o <code>ip a</code>, por ejemplo <code>192.168.1.50</code>, y fíjala en el router.</li>
+            <li>Desde otro aparato de la red, abre en un navegador <code>http://192.168.1.50:6878/webui/api/service?method=get_version&amp;format=json</code>. Si no responde, el problema está en el cortafuegos o en el propio motor, no en Kodi, y hay que resolverlo antes de continuar.</li>
+            <li>En EKHorus, IP <code>192.168.1.50</code> y puerto <code>6878</code>.</li>
+            <li>Reproduce con normalidad.</li>
+          </ol>
+          <p><strong>Una limitación que conviene conocer.</strong> La entrada <em>Detener motor Acestream</em> del menú solo puede cerrar motores que corran en el mismo aparato que Kodi; con un motor remoto aparecerá el aviso "Motor Acestream NO cerrado". Un motor en otra máquina se detiene desde esa máquina.</p>
+          <div class="callout"><strong>Aviso de seguridad.</strong> No abras el puerto 6878 en el router hacia internet. El API del motor no tiene autenticación, de modo que cualquiera podría usar tu conexión para descargar y compartir contenido en tu nombre. Dentro de la red local no hay problema.</div>
+        </div>
+      </details>
+
+      <details class="guide-item">
+        <summary>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
+          <span>F) AceServe y Kodi en aparatos distintos</span>
+        </summary>
+        <div class="guide-body">
+          <p>AceServe corriendo en un móvil o televisor Android y Kodi en otro aparato es exactamente el escenario E. En EKHorus se pone la IP del dispositivo con AceServe y el puerto 6878. Conviene tener en cuenta que un móvil con la pantalla apagada puede dormir el servicio; para un servidor estable es preferible un PC o un contenedor Docker.</p>
+        </div>
+      </details>
+
+      <details class="guide-item">
+        <summary>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><polygon points="10 8.5 16 12 10 15.5 10 8.5"/></svg>
+          <span>G) AceStream o AceServe con VLC, sin Kodi</span>
+        </summary>
+        <div class="guide-body">
+          <p>Esta combinación no usa EKHorus, pero merece la pena conocerla porque es la mejor herramienta de diagnóstico disponible. Si un enlace funciona en VLC, el motor está bien y el problema está en Kodi.</p>
+          <p>Con el motor arrancado, en VLC se abre <em>Medio &gt; Abrir ubicación de red</em> y se pega:</p>
+          <div class="code-block">
+            <code>http://127.0.0.1:6878/ace/getstream?id=EL_ID_DE_40_CARACTERES</code>
+            <button class="btn-copy" type="button" data-copy="http://127.0.0.1:6878/ace/getstream?id=" data-copy-label="Dirección copiada">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              Copiar
+            </button>
+          </div>
+          <p>Variantes útiles:</p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>URL</th><th>Para qué sirve</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><code>http://IP:6878/ace/getstream?id=HASH</code></td><td>La forma habitual (MPEG-TS progresivo), con menos latencia.</td></tr>
+                <tr><td><code>http://IP:6878/ace/manifest.m3u8?id=HASH</code></td><td>Lo mismo en formato HLS. Funciona mejor en algunos reproductores y en Chromecast.</td></tr>
+                <tr><td><code>http://IP:6878/ace/getstream?infohash=HASH</code></td><td>Cuando se tiene un infohash de torrent en lugar de un identificador de contenido.</td></tr>
+                <tr><td><code>http://IP:6878/ace/getstream?url=http://.../algo.acelive</code></td><td>Cuando se tiene la URL de un fichero de transporte.</td></tr>
+                <tr><td><code>http://IP:6878/webui/player/HASH</code></td><td>El reproductor web del motor, para ver el canal en el propio navegador. Disponible en las versiones recientes del motor.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Si el motor está en otra máquina se sustituye <code>127.0.0.1</code> por su IP. Es la misma URL que EKHorus construye internamente.</p>
+        </div>
+      </details>
+
+      <details class="guide-item">
+        <summary>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          <span>H) Reproductor externo en Android (ajuste Reproductor externo)</span>
+        </summary>
+        <div class="guide-body">
+          <p>Este ajuste, visible solo en Android, hace que EKHorus no reproduzca en Kodi y entregue el enlace a otra aplicación.</p>
+          <ul>
+            <li>Con AceServe seleccionado, lanza la URL <code>http://IP:PUERTO/ace/getstream?id=...</code> como vídeo, de modo que Android ofrece abrirla con VLC, MX Player o el reproductor que haya instalado.</li>
+            <li>Con la app oficial, entrega el enlace a Ace Stream y reproduce ella.</li>
+          </ul>
+          <p>Sirve para los canales que en Kodi se cortan, se ven a saltos o no arrancan (algo habitual con ciertos códecs o con el descodificador por hardware del televisor) pero que en VLC o en la app de AceStream funcionan sin problema. A cambio se pierde el panel de estadísticas, el historial deja de alimentarse y la reproducción ocurre fuera de Kodi. Además, este ajuste solo actúa con identificadores de contenido; los torrents y los magnets se reproducen siempre en Kodi.</p>
+          <p>Si no tienes VLC en el aparato, se instala desde <em>Descargar APKs</em>, en el propio EKHorus (sección 6).</p>
+        </div>
+      </details>
+    </section>
+
+    <!-- ===== 3. Motor interno y externo ===== -->
+    <section id="motor" class="section" aria-labelledby="motor-title">
+      <h2 id="motor-title"><span class="num">3.</span> Motor interno y motor externo</h2>
+      <p class="section-intro">No existe un interruptor para elegir el modo. EKHorus lo decide según el sistema en el que corre. Aun así, entender la diferencia explica buena parte de los ajustes y de los mensajes que muestra.</p>
+
+      <h3>Motor interno (EKHorus lo instala, lo arranca y lo detiene)</h3>
+      <p>La primera vez que se abre el addon, si la plataforma lo permite, descarga el motor automáticamente (aparece el mensaje "Descargando Acestream...") y lo guarda en la carpeta de datos del addon. Desde ese momento, cada vez que se reproduce algo, EKHorus lanza el proceso del motor y, si así se configura, lo cierra al terminar.</p>
+      <p>Plataformas con motor interno:</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Plataforma</th><th>Qué instala y ejecuta</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Windows</td><td><code>ace_engine.exe</code> dentro de la carpeta del addon. Lo cierra con <code>taskkill</code>.</td></tr>
+            <tr><td>LibreELEC / CoreELEC / AlexELEC (ARM)</td><td><code>acestream.start</code> y <code>acestream.stop</code>.</td></tr>
+            <tr><td>LibreELEC x86 (root)</td><td><code>acestream_chroot.start</code>.</td></tr>
+            <tr><td>OSMC / Raspberry Pi OS / Raspbian</td><td><code>sudo acestream.start</code> y <code>sudo acestream.stop</code>.</td></tr>
+            <tr><td>Ubuntu / Arch / Fedora / Mint</td><td>No descarga nada. Usa el paquete snap, que debe instalar el usuario (<code>acestreamplayer</code>). EKHorus lo lanza con <code>snap run acestreamplayer.engine</code> y avisa si no está.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>En todos estos casos la dirección correcta es <code>127.0.0.1</code> y el puerto <code>6878</code>, porque el motor corre en el mismo aparato que Kodi.</p>
+
+      <h3>Motor externo (ya está en marcha y EKHorus solo lo usa)</h3>
+      <p>EKHorus queda en modo externo cuando no puede gestionar el motor por sí mismo. Eso ocurre siempre en Android, en Linux ARM sin root fuera de OSMC y Raspbian, en macOS y en arquitecturas poco comunes. En la práctica también ocurre cuando la IP configurada apunta a otra máquina.</p>
+      <p>En este modo EKHorus no arranca nada. Comprueba si hay un motor respondiendo en la dirección configurada y, si lo hay, reproduce. Si no lo hay, muestra el aviso "No hemos podido iniciar el motor Acestream. Asegúrese de que está iniciado antes de continuar" y espera durante los segundos configurados, para dar tiempo a arrancarlo a mano.</p>
+      <p>Casos típicos de motor externo:</p>
+      <ul>
+        <li>AceStream Media instalado en el mismo Windows, cuando se prefiere ese en lugar del que descarga el addon. La dirección sigue siendo <code>127.0.0.1</code> y el puerto <code>6878</code>.</li>
+        <li>Un motor corriendo en otro PC, un NAS o un contenedor Docker de la red local. La dirección es la IP de esa máquina.</li>
+        <li>Android, con la app Ace Stream o con AceServe.</li>
+        <li>Un Mac, donde no existe motor nativo. Lo habitual es ejecutarlo en Docker en el propio equipo (el comando está en el escenario E) y dejar la dirección en <code>127.0.0.1</code>.</li>
+      </ul>
+      <p>En las plataformas con motor interno no hace falta forzar nada para usar uno externo. Antes de arrancar el suyo, EKHorus comprueba si ya hay un motor respondiendo en la dirección configurada, y si lo hay, lo usa sin lanzar nada. Basta con tener el motor propio en marcha antes de reproducir.</p>
+      <div class="callout"><strong>Un detalle que ayuda a saber en qué modo se está.</strong> Con motor interno instalado aparecen dos ajustes adicionales, <em>Detener el Motor Acestream automáticamente</em> y el botón <em>Reinstalar Acestream</em>. Si no se ven, el addon funciona en modo externo.</div>
+    </section>
+
+    <!-- ===== 4. IP y puerto ===== -->
+    <section id="ip-puerto" class="section" aria-labelledby="ip-title">
+      <h2 id="ip-title"><span class="num">4.</span> Para qué sirven la dirección IP y el puerto</h2>
+      <p class="section-intro">Son los dos ajustes que más se tocan sin necesidad y los que más configuraciones rompen. Su función es sencilla. No configuran el motor ni afectan a su rendimiento; solo indican a EKHorus dónde encontrarlo.</p>
+
+      <h3>Dirección IP del servidor AceStream Engine</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Valor</th><th>Cuándo usarlo</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>127.0.0.1</code></td><td>Prácticamente siempre. El motor corre en el mismo aparato que Kodi, sea Windows, LibreELEC, Android o una Raspberry. Es el valor por defecto.</td></tr>
+            <tr><td>Una IP de la red local, por ejemplo <code>192.168.1.50</code></td><td>El motor corre en otro equipo, como un PC de otra habitación, un NAS, un contenedor Docker o un móvil con AceServe. Kodi lo usa a través de la red.</td></tr>
+            <tr><td>Una IP pública o un VPS</td><td>Posible, pero desaconsejable si no se sabe exactamente lo que se hace, porque expone el motor a internet. Hay un aviso al respecto en el escenario E.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>La ventaja real de apuntar a otra máquina está en el reparto del trabajo. El aparato donde se ve la televisión (un Fire TV, una Raspberry modesta, un televisor Android) no tiene que hacer el trabajo P2P, que es lo que consume procesador, memoria, red y disco. Ese esfuerzo recae en el equipo potente, y el aparato de Kodi recibe un vídeo ya convertido. Además, un solo motor puede servir a varios Kodi a la vez.</p>
+      <p>Si se usa una IP remota conviene vigilar tres cosas:</p>
+      <ul>
+        <li>La IP del equipo del motor debe ser fija, o tener una reserva DHCP en el router. Si el router se la cambia, EKHorus dejará de encontrarlo.</li>
+        <li>El cortafuegos de la máquina del motor debe permitir conexiones entrantes al puerto 6878 desde la red local. En Windows es la causa más frecuente de que el motor funcione en el propio PC pero no se vea desde el salón.</li>
+        <li>El motor debe escuchar en la red, no solo en localhost. En Docker se resuelve publicando el puerto (<code>-p 6878:6878</code>). Si el motor solo escucha en <code>127.0.0.1</code>, desde fuera no responderá aunque el cortafuegos esté abierto.</li>
+      </ul>
+      <p>Y, evidentemente, el equipo del motor tiene que estar encendido. EKHorus ya no se queda bloqueado cuando no lo está (hace un sondeo rápido de dos segundos al abrir el menú), pero no podrá reproducir.</p>
+
+      <h3>Puerto del servidor AceStream Engine</h3>
+      <p>El valor por defecto es <code>6878</code>, el puerto del API HTTP del motor. Conviene dejarlo así salvo que el motor escuche realmente en otro. Hay tres motivos legítimos para cambiarlo:</p>
+      <ul>
+        <li>El motor corre en Docker con el puerto publicado en otro número. Si se publicó como <code>-p 6880:6878</code>, en EKHorus hay que poner <code>6880</code>.</li>
+        <li>Hay dos motores en la misma máquina y el segundo escucha en otro puerto.</li>
+        <li>Otro programa ocupaba el 6878 y el motor se arrancó con un <code>--http-port</code> distinto.</li>
+      </ul>
+      <p>Cambiar el puerto a ver si algo mejora no arregla nada; solo hace que EKHorus llame a una puerta donde no hay nadie. Ante la duda, los valores seguros son <code>127.0.0.1</code> y <code>6878</code>.</p>
+      <p>EKHorus es tolerante con el formato. Si se escribe <code>http://192.168.1.50/</code> o <code>192.168.1.50:6878</code>, limpia el esquema, la barra final y el puerto pegado, y si el puerto no es un número válido recurre al 6878. Aun así, lo correcto es escribir solo la IP en un campo y solo el número en el otro.</p>
+
+      <h3>Comprobación rápida del motor</h3>
+      <p>Antes de tocar nada en Kodi se puede verificar dónde está el motor abriendo esta dirección en cualquier navegador de la misma red:</p>
+      <div class="code-block">
+        <code>http://LA_IP:6878/webui/api/service?method=get_version&amp;format=json</code>
+        <button class="btn-copy" type="button" data-copy="http://LA_IP:6878/webui/api/service?method=get_version&amp;format=json" data-copy-label="Dirección copiada">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copiar
+        </button>
+      </div>
+      <p>Si responde algo parecido a <code>{"result": {"version": "3.2.3", ...}}</code>, el motor está en marcha y es accesible desde ese punto; si EKHorus falla, el problema no es la dirección. Si la página no carga o da error de conexión, el motor no está arrancado, el cortafuegos lo bloquea o la IP y el puerto no son esos. En ese caso hay que arreglarlo ahí antes de seguir con Kodi.</p>
+      <p>Esta única comprobación resuelve la mayoría de las consultas sobre el error "Engine no iniciado".</p>
+    </section>
+
+    <!-- ===== 5. Ajustes ===== -->
+    <section id="ajustes" class="section" aria-labelledby="ajustes-title">
+      <h2 id="ajustes-title"><span class="num">5.</span> Los ajustes de EKHorus, uno a uno</h2>
+      <p class="section-intro">Qué hace cada opción y cuándo conviene tocarla. Van en el mismo orden en que aparecen en pantalla, con los tres más usados arriba del todo.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Ajuste</th><th>Qué hace</th><th>Recomendación</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Redirigir a StreamNinja las llamadas de otros addons</td>
+              <td>Solo aparece con StreamNinja instalado. Cuando otro addon pide reproducir un acestream, EKHorus se lo pasa al reproductor de StreamNinja, con protección contra bucles (si StreamNinja lo devuelve, lo reproduce EKHorus).</td>
+              <td>Activarlo solo si se prefiere el motor de StreamNinja.</td>
+            </tr>
+            <tr>
+              <td>Reproductor externo (solo Android)</td>
+              <td>Entrega el enlace a otra aplicación en lugar de reproducir en Kodi (escenario H).</td>
+              <td>Alternativa para canales que fallan en Kodi.</td>
+            </tr>
+            <tr>
+              <td>Motor ace (solo Android)</td>
+              <td>Elige entre la app oficial (<code>org.acestream.----</code>) y AceServe (<code>org.free.aceserve</code>). Determina cómo se abre el motor y dónde está su caché.</td>
+              <td>Debe coincidir con la app instalada.</td>
+            </tr>
+            <tr>
+              <td>Dirección IP del servidor AceStream Engine</td>
+              <td>Dónde está el motor (sección 4).</td>
+              <td><code>127.0.0.1</code> salvo motor remoto.</td>
+            </tr>
+            <tr>
+              <td>Puerto del servidor AceStream Engine</td>
+              <td>El puerto del API HTTP del motor.</td>
+              <td><code>6878</code> salvo que se sepa que es otro.</td>
+            </tr>
+            <tr>
+              <td>Tiempo máximo para abrir el motor Acestream (10 a 120 s)</td>
+              <td>Cubre dos esperas, la del arranque del motor y la del inicio del enlace antes de darse por vencido.</td>
+              <td>30 segundos funcionan bien en un PC. En Raspberry, Fire TV o con motor remoto conviene subir a 60 o 90. Si aparece "Engine no iniciado" pero el motor acaba arrancando, es este ajuste.</td>
+            </tr>
+            <tr>
+              <td>Mostrar información Acestream en OSD</td>
+              <td>El panel con estado, velocidades, semillas y datos transferidos que aparece al mostrar los controles durante el vídeo.</td>
+              <td>Útil para saber si un canal va mal por falta de semillas. Puede desactivarse si molesta o si el skin da problemas con él.</td>
+            </tr>
+            <tr>
+              <td>Recordar último ID operativo</td>
+              <td>Deja precargado en el cuadro de reproducción el último enlace que funcionó más de tres minutos.</td>
+              <td>Cómodo si se repite canal a diario.</td>
+            </tr>
+            <tr>
+              <td>Mostrar QR</td>
+              <td>Usa como carátula de cada canal un código QR con su enlace <code>acestream://</code>, pensado para escanearlo con el móvil y abrirlo allí.</td>
+              <td>Mejor desactivado si no se usa; cada QR genera una imagen en la carpeta temporal.</td>
+            </tr>
+            <tr>
+              <td>Detener el Motor Acestream automáticamente (solo motor interno)</td>
+              <td>Cierra el proceso del motor al terminar la reproducción.</td>
+              <td>Activarlo si molesta que el motor siga consumiendo red y procesador compartiendo contenido cuando ya no se ve nada. Mejor desactivado si se encadenan varios canales, porque volver a arrancarlo lleva su tiempo.</td>
+            </tr>
+            <tr>
+              <td>Reinstalar Acestream (solo motor interno)</td>
+              <td>Vuelve a descargar y descomprimir el motor.</td>
+              <td>Lo primero que probar si el motor interno se ha dañado y no arranca.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p>En Ubuntu con snap el motor se detiene siempre al terminar, con independencia del ajuste.</p>
+    </section>
+
+    <!-- ===== 6. Uso diario ===== -->
+    <section id="uso" class="section" aria-labelledby="uso-title">
+      <h2 id="uso-title"><span class="num">6.</span> El menú principal</h2>
+      <p class="section-intro">Esto es lo que aparece al abrir EKHorus. Hay dos entradas que no siempre están, y conviene saber por qué.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Entrada</th><th>Qué hace</th><th>¿Siempre aparece?</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Ajustes</td><td>Abre la configuración del addon (sección 5).</td><td>Sí</td></tr>
+            <tr><td>Descargar APKs</td><td>Descarga e instala las apps que hacen falta en el aparato, que son AceStream, AceServe, VLC y EspaKodi Warp.</td><td>Sí</td></tr>
+            <tr><td>EspaKodi Addons</td><td>Instala y abre los addons del ecosistema EspaKodi.</td><td>Sí</td></tr>
+            <tr><td>Reproducir identificador Acestream / Torrent URI</td><td>Pide un enlace y lo reproduce.</td><td>Sí</td></tr>
+            <tr><td>Buscar enlaces...</td><td>Busca enlaces por texto o carga una lista.</td><td>Sí</td></tr>
+            <tr><td>Historial de reproducciones</td><td>Los últimos vídeos vistos.</td><td><strong>No.</strong> Solo aparece cuando ya has visto algo durante más de tres minutos. En una instalación recién hecha todavía no está.</td></tr>
+            <tr><td>Detener motor Acestream</td><td>Cierra el motor.</td><td><strong>No.</strong> Solo aparece si el addon detecta un motor vivo en la IP y el puerto configurados, y nunca en Android.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout">Si <em>Detener motor Acestream</em> no aparece en el menú, en la dirección configurada no hay ningún motor respondiendo. Conviene revisar la sección 4 antes de pelearse con la reproducción.</div>
+
+      <div class="panel">
+        <h3>Reproducir identificador Acestream / Torrent URI</h3>
+        <p>Acepta varias cosas:</p>
+        <ul>
+          <li>Un ID de 40 caracteres, con o sin el prefijo <code>acestream://</code>.</li>
+          <li>Un enlace <code>magnet:</code>.</li>
+          <li>Una URL que termine en <code>.torrent</code>.</li>
+          <li>La URL de un fichero de transporte (<code>.acelive</code>).</li>
+        </ul>
+      </div>
+
+      <div class="panel">
+        <h3>Descargar APKs</h3>
+        <p>En un Fire TV o un TV box, conseguir el motor es lo más engorroso de todo el proceso. No hay USB cómodo, ni ADB, ni forma fácil de pasar un fichero desde el móvil. Este menú lo resuelve descargando las apps directamente en el aparato. Ofrece cuatro.</p>
+        <ul>
+          <li><strong>AceStream</strong> y <strong>AceServe</strong>, los dos motores (escenarios A y B).</li>
+          <li><strong>VLC</strong>, útil como reproductor externo cuando un canal falla en Kodi (escenario H).</li>
+          <li><strong>EspaKodi Warp</strong>.</li>
+        </ul>
+        <p>Eliges la carpeta de destino cada vez. La descarga muestra el tamaño y se puede cancelar. Al terminar, en Android se ofrece instalar directamente; si el sistema no lo permite, el addon da las instrucciones para hacerlo desde un gestor de archivos y un acceso directo a los ajustes de orígenes desconocidos, que es el permiso que Android pide la primera vez.</p>
+        <div class="callout">Son APK de 32 bits, y es a propósito. Casi cualquier Android, aunque sea de 64 bits, los instala sin problema, y son los que funcionan en los aparatos a los que va dirigido este menú. Solo algunos equipos muy recientes han dejado de admitirlos, y la forma de saberlo es probar. Si el sistema no deja instalarlos, hay que buscar las versiones de 64 bits, a las que enlaza el propio aviso del menú.</div>
+      </div>
+
+      <div class="panel">
+        <h3>EspaKodi Addons</h3>
+        <p>Un menú aparte, ajeno a AceStream, con los addons del ecosistema EspaKodi (EspaTV, EspaDaily, AtresDaily, StreamNinja, TopZilla, loiolog, Flow FavManager, loiolink, Elementum y youtube-dl). Muestra cuáles tienes instalados, cuáles deshabilitados y cuáles no, y los instala solo con pulsarlos. Descarga el repositorio, lo registra en Kodi y lanza la instalación, y si algo se atasca da las instrucciones para hacerlo a mano. El repositorio de Elementum viaja dentro de EKHorus, así que no hay que añadir ninguna fuente. Incluye además accesos al repositorio unificado y a la última versión del APK de EspaKodi, que es donde están las de 64 bits.</p>
+      </div>
+
+      <div class="panel">
+        <h3>Buscar enlaces...</h3>
+        <p>Admite en el mismo cuadro:</p>
+        <ul>
+          <li>Texto libre (<code>la 1</code>, por ejemplo), que se busca en <code>acestreamsearch.net</code> y en <code>search-ace.stream</code>.</li>
+          <li>La URL de una lista, ya sea JSON, M3U, pastebin, <code>.txt</code>, páginas de elcano, <code>vercel.app</code>, <code>netlify.app</code> o cualquier página de la que se puedan extraer hashes de 40 caracteres.</li>
+          <li>Un enlace <code>ass://</code>, que se resuelve por DNS (primero Google y, si está bloqueado, Cloudflare).</li>
+          <li>Varias fuentes a la vez separadas con <code>;</code>. Los resultados se fusionan y se eliminan los duplicados.</li>
+        </ul>
+      </div>
+
+      <div class="panel">
+        <h3>Historial de reproducciones</h3>
+        <p>Guarda los veinte últimos vídeos vistos durante más de tres minutos, con su título y su carátula. Se puede borrar entrada a entrada o completo desde el menú contextual.</p>
+      </div>
+
+      <div class="panel">
+        <h3>Detener motor Acestream</h3>
+        <p>Solo aparece en el menú cuando se detecta un motor en marcha, y no está disponible en Android. Como se indicó en el escenario E, solo puede cerrar motores locales.</p>
+      </div>
+    </section>
+
+    <!-- ===== 7. Diagnóstico ===== -->
+    <section id="diagnostico" class="section" aria-labelledby="diag-title">
+      <h2 id="diag-title"><span class="num">7.</span> Diagnóstico</h2>
+      <p class="section-intro">El orden correcto es siempre el mismo:</p>
+      <ol>
+        <li>¿Responde <code>http://IP:6878/webui/api/service?method=get_version&amp;format=json</code> en el navegador?</li>
+        <li>¿Funciona el enlace en VLC con <code>http://IP:6878/ace/getstream?id=...</code>?</li>
+        <li>Solo si las dos anteriores van bien, el problema está en Kodi o en EKHorus.</li>
+      </ol>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Síntoma</th><th>Causa habitual</th><th>Solución</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>"Engine no iniciado"</td>
+              <td>El motor no está arrancado, no está donde indica la configuración o tardó más de lo permitido.</td>
+              <td>Comprobar con la URL del navegador. Revisar IP y puerto. Subir el tiempo máximo a 60 o 90 segundos. En Windows, comprobar que el antivirus no bloquee <code>ace_engine.exe</code>.</td>
+            </tr>
+            <tr>
+              <td>Funcionaba y dejó de funcionar (motor en otro equipo)</td>
+              <td>El router cambió la IP del servidor.</td>
+              <td>Reserva DHCP o IP fija.</td>
+            </tr>
+            <tr>
+              <td>Desde el PC funciona, desde el televisor no</td>
+              <td>Cortafuegos del equipo del motor, o motor escuchando solo en localhost.</td>
+              <td>Abrir el 6878 en el cortafuegos. En Docker, publicar el puerto.</td>
+            </tr>
+            <tr>
+              <td>El canal se queda en "Pre-Buffer"</td>
+              <td>No hay semillas. El enlace está muerto o el evento no ha empezado.</td>
+              <td>No es un problema de configuración. Si el panel muestra cero o una semilla, ese enlace no va a dar vídeo; hay que probar otro.</td>
+            </tr>
+            <tr>
+              <td>Se ve a tirones o se corta</td>
+              <td>Pocas semillas, red insuficiente o el aparato no puede descodificar el vídeo.</td>
+              <td>Probar el mismo ID en VLC. Si en VLC va bien y en Kodi no, el problema es del reproductor de Kodi (en Android puede servir <em>Reproductor externo</em>). También puede ayudar subir el búfer en vivo en los ajustes del propio motor, un valor entre 30 y 60 segundos.</td>
+            </tr>
+            <tr>
+              <td>"No se han encontrado enlaces en..."</td>
+              <td>La lista cambió de formato, está caída o la operadora la bloquea. En España los bloqueos de LaLiga afectan a los buscadores y a muchas listas, sobre todo los días de partido.</td>
+              <td>Abrir la misma dirección en el navegador de otro aparato de la casa. Si tampoco carga ahí, no es cosa del addon; hay que probar otra fuente. Los fallos quedan registrados en el log de Kodi.</td>
+            </tr>
+            <tr>
+              <td>"El ID no tiene un formato válido"</td>
+              <td>Lo pegado no es un hash hexadecimal de 40 caracteres.</td>
+              <td>Copiar el enlace completo, sin espacios ni saltos de línea.</td>
+            </tr>
+            <tr>
+              <td>El almacenamiento se llena (Android)</td>
+              <td>El ajuste <em>Motor ace</em> no coincide con la app instalada y la caché se limpia en la ruta equivocada.</td>
+              <td>Corregir el ajuste y borrar a mano la carpeta <code>.ACEStream</code>.</td>
+            </tr>
+            <tr>
+              <td>El motor sigue consumiendo tras cerrar Kodi</td>
+              <td>Es el comportamiento normal; sigue compartiendo contenido.</td>
+              <td>Activar <em>Detener el Motor Acestream automáticamente</em> o usar <em>Detener motor Acestream</em>.</td>
+            </tr>
+            <tr>
+              <td>Android no deja instalar el APK descargado</td>
+              <td>Falta el permiso de orígenes desconocidos, que Android pide la primera vez y hay que conceder a la app que abre el fichero.</td>
+              <td>El menú de descarga incluye un acceso directo a esos ajustes. Si el permiso está dado y aun así se rechaza, el aparato puede ser de los que ya solo admiten 64 bits; en ese caso hay que buscar la versión de 64 bits en <code>espakodi.github.io/apk</code>.</td>
+            </tr>
+            <tr>
+              <td>Un addon de <em>EspaKodi Addons</em> no termina de instalarse</td>
+              <td>Kodi no ha registrado el repositorio, o le falta activar los orígenes desconocidos.</td>
+              <td>El addon lo reintenta solo y, si no lo consigue, muestra las instrucciones para instalarlo a mano desde el repositorio. Con Elementum puede hacer falta reiniciar Kodi y volver a pulsarlo, porque su repositorio levanta un servicio propio que tarda un poco en responder.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>El log de Kodi es la fuente definitiva. Todo lo que hace el addon queda registrado con la etiqueta <code>[script.module.horus]</code>. En Windows está en <code>%APPDATA%\Kodi\kodi.log</code>.</p>
+    </section>
+
+    <!-- ===== 8. FAQ ===== -->
+    <section id="faq" class="section" aria-labelledby="faq-title">
+      <h2 id="faq-title"><span class="num">8.</span> Preguntas frecuentes</h2>
+
+      <details class="guide-item">
+        <summary>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span>¿EKHorus tiene canales?</span>
+        </summary>
+        <div class="guide-body">
+          <p>No. No incluye películas, series ni deportes. Es un reproductor, y los enlaces los aporta el usuario.</p>
+        </div>
+      </details>
+
+      <details class="guide-item">
+        <summary>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span>¿De dónde salen los enlaces entonces?</span>
+        </summary>
+        <div class="guide-body">
+          <p>De la función <em>Buscar enlaces</em> (sección 6), que admite búsqueda por texto y listas publicadas en la web, y de lo que compartan las comunidades de usuarios. La tecnología AceStream es legal; la legalidad de un contenido concreto depende de sus derechos de emisión y es responsabilidad de quien lo reproduce.</p>
+        </div>
+      </details>
+
+      <details class="guide-item">
+        <summary>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span>¿En qué versiones de Kodi funciona?</span>
+        </summary>
+        <div class="guide-body">
+          <p>En Kodi 19 (Matrix) y posteriores. En Kodi 18 o anteriores no, porque EKHorus usa Python 3.</p>
+        </div>
+      </details>
+
+      <details class="guide-item">
+        <summary>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span>¿Funciona en Xbox, Apple TV, iPhone o una Smart TV?</span>
+        </summary>
+        <div class="guide-body">
+          <p>Kodi existe para Xbox y Apple TV, pero el motor AceStream no, así que en esos aparatos la única vía es un motor remoto en otra máquina de la red, tal como se describe en el escenario E. En iPhone y en las Smart TV de webOS o Tizen no hay ni Kodi ni motor; lo más práctico es un motor remoto y reproducir su dirección con VLC o con cualquier app que acepte URL de red, como se explica en el escenario G.</p>
+        </div>
+      </details>
+
+      <details class="guide-item">
+        <summary>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span>¿Hay que instalar AceStream aparte?</span>
+        </summary>
+        <div class="guide-body">
+          <p>En Windows, LibreELEC, CoreELEC, OSMC y Raspberry no; EKHorus lo descarga automáticamente. En Android sí hace falta la app, la oficial o AceServe, pero se instala desde el propio addon con <em>Descargar APKs</em>. En Ubuntu y derivados, mediante el snap <code>acestreamplayer</code>. Y en cualquier plataforma, si ya existe un motor propio en marcha, EKHorus lo usa sin arrancar el suyo.</p>
+        </div>
+      </details>
+
+      <details class="guide-item">
+        <summary>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span>¿AceServe o la app oficial?</span>
+        </summary>
+        <div class="guide-body">
+          <p>AceServe para tener un servidor limpio en segundo plano, sin publicidad, con autoarranque y al que puedan conectarse otros aparatos. La app oficial si además se quiere su reproductor. Lo único imprescindible es que el ajuste <em>Motor ace</em> coincida con la app instalada.</p>
+        </div>
+      </details>
+
+      <details class="guide-item">
+        <summary>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span>¿Puede un motor servir a varios Kodi?</span>
+        </summary>
+        <div class="guide-body">
+          <p>Sí, y es una de las mejores razones para cambiar la IP. Un motor y varios clientes apuntando a su dirección, cada uno con un canal distinto si el equipo lo aguanta.</p>
+        </div>
+      </details>
+
+      <details class="guide-item">
+        <summary>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span>¿Cambiar el puerto mejora algo?</span>
+        </summary>
+        <div class="guide-body">
+          <p>No. No arregla cortes, ni velocidad, ni canales muertos. Solo tiene sentido cuando el motor escucha realmente en otro puerto.</p>
+        </div>
+      </details>
+
+      <details class="guide-item">
+        <summary>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span>¿Por qué sube datos si solo se está viendo un canal?</span>
+        </summary>
+        <div class="guide-body">
+          <p>Porque es P2P. Mientras se ve, se comparte con otros usuarios, y eso aparece en el panel como subida. No se puede desactivar desde EKHorus; es el funcionamiento de la red, y es también el motivo para no exponer el motor a internet.</p>
+        </div>
+      </details>
+
+      <details class="guide-item">
+        <summary>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span>¿Hace falta VPN?</span>
+        </summary>
+        <div class="guide-body">
+          <p>EKHorus no la incluye ni la gestiona. En AceStream, como en cualquier red P2P, la IP del usuario es visible para el resto de participantes, y quien ve un canal también lo está reemitiendo. En España esto ha dejado de ser un riesgo teórico; LaLiga cuenta con autorización judicial para pedir a las operadoras la identidad de las IPs que detecta compartiendo sus partidos, y ya ha enviado cartas a usuarios. Con esos datos, la decisión es de cada uno.</p>
+        </div>
+      </details>
+    </section>
+
+    <!-- ===== 9. Importante ===== -->
+    <section id="resumen" class="section" aria-labelledby="resumen-title">
+      <h2 id="resumen-title"><span class="num">9.</span> Importante</h2>
+      <div class="card summary-card">
+        <ol>
+          <li>El motor hace el trabajo y EKHorus solo se comunica con él por HTTP.</li>
+          <li>La IP y el puerto indican dónde está el motor. <code>127.0.0.1</code> y <code>6878</code> si corre en el mismo aparato; la IP de la otra máquina si corre en otra.</li>
+          <li>Motor interno significa que EKHorus lo instala y lo arranca (Windows, LibreELEC y similares, OSMC). Motor externo significa que ya está en marcha (Android, motor remoto, Docker o una instalación propia).</li>
+          <li>Ante cualquier fallo, lo primero es comprobar el motor en el navegador con <code>http://IP:6878/webui/api/service?method=get_version&amp;format=json</code>.</li>
+        </ol>
+      </div>
+    </section>
+    <!-- ===== 10. Novedades ===== -->
+    <section id="novedades" class="section" aria-labelledby="novedades-title">
+      <h2 id="novedades-title"><span class="num">10.</span> Novedades</h2>
+      <p class="section-intro">Lo que ha cambiado en cada versión del addon.</p>
+      <details class="guide-item" open>
+        <summary>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v6M12 2 9 5M12 2l3 3"/><rect x="3" y="8" width="18" height="13" rx="2.5"/><path d="M3 13h18"/></svg>
+          <span>EKHorus 1.5.0</span>
+        </summary>
+        <div class="guide-body">
+          <p><strong>Menú principal</strong></p>
+          <ul>
+            <li>Ajustes pasa a ser la primera entrada, seguida de dos menús nuevos, Descargar APKs y EspaKodi Addons.</li>
+          </ul>
+          <p><strong>Descargar APKs</strong></p>
+          <ul>
+            <li>Menú nuevo para descargar e instalar AceStream, AceServe, VLC y EspaKodi Warp, los APK que hacen falta en un Fire TV o un TV box, donde pasar ficheros al aparato es un engorro. Se bajan a la carpeta del dispositivo que elijas cada vez. Son versiones de 32 bits, las que instalan casi todos estos aparatos, y un aviso en el propio menú lo explica y enlaza a las de 64 bits.</li>
+            <li>Antes de empezar se comprueba que se pueda escribir en la carpeta, no cuando ya llevas 100 MB descargados. El archivo solo pasa a llamarse .apk si la descarga termina entera, y luego se comprueba que no esté corrupto. Si el disco se queda sin espacio a mitad, la descarga avisa en lugar de dejar un APK truncado que parece bueno.</li>
+            <li>El botón Cancelar detiene la descarga y no deja archivos a medias en la carpeta.</li>
+            <li>Si el APK ya estaba descargado, se ofrece reutilizarlo en vez de bajarlo otra vez. Si el que había estaba dañado, se descarga de nuevo sin preguntar. Dos pulsaciones seguidas ya no se pisan entre ellas.</li>
+            <li>En Android se ofrece instalar el APK directamente. En Kodi 22 o posterior abre el instalador del sistema, y con root puede usar pm install. Cuando el sistema no lo permite, se dan las instrucciones para instalarlo a mano desde un gestor de archivos, con un acceso directo a los ajustes de orígenes desconocidos.</li>
+          </ul>
+          <p><strong>EspaKodi Addons</strong></p>
+          <ul>
+            <li>Menú nuevo con el ecosistema de addons de EspaKodi (EspaTV, EspaDaily, AtresDaily, StreamNinja, TopZilla, loiolog, Flow FavManager, loiolink, Elementum y youtube-dl), que muestra cuáles tienes instalados, cuáles deshabilitados y cuáles no.</li>
+            <li>Los instala solos. Descarga el repositorio, lo registra y lanza la instalación, con reintentos y descarga directa del zip si Kodi se atasca. Si aun así falla, muestra las instrucciones para hacerlo a mano.</li>
+            <li>Incluye el repositorio de Elementum, así que no hace falta añadir ninguna fuente. También se instala youtube-dl, desde el repositorio oficial de Kodi.</li>
+            <li>Accesos al repositorio unificado y a la última versión del APK de EspaKodi.</li>
+            <li>El menú comprueba qué addons hay instalados sin dejar un error en el registro de Kodi por cada uno que falte.</li>
+            <li>Los repositorios que se descargan se validan antes de extraerse, y se rechaza cualquier ZIP con rutas manipuladas que intentara escribir fuera de la carpeta de addons.</li>
+          </ul>
+          <p><strong>Ajustes y descargas</strong></p>
+          <ul>
+            <li>En los ajustes, los tres controles más usados (redirección a StreamNinja, reproductor externo y motor ace) pasan a estar los primeros.</li>
+            <li>Arreglada la barra de progreso de las descargas, que saltaba al 100% al instante y se quedaba clavada. Afectaba también a la instalación del motor AceStream.</li>
+          </ul>
+        </div>
+      </details>
+      <details class="guide-item">
+        <summary>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v6M12 2 9 5M12 2l3 3"/><rect x="3" y="8" width="18" height="13" rx="2.5"/><path d="M3 13h18"/></svg>
+          <span>EKHorus 1.4.0</span>
+        </summary>
+        <div class="guide-body">
+          <p><strong>Seguridad</strong></p>
+          <ul>
+            <li>Eliminado el uso de eval() en todo el addon. Antes, una lista de canales cargada desde una web podía ejecutar código arbitrario en el equipo, porque lo descargado se interpretaba como código Python. Ahora se interpreta como datos (JSON o literales) y nunca se ejecuta. Esto también afectaba a las cabeceras que llegan de otros addons, a los ajustes guardados y a los parámetros de las llamadas externas.</li>
+          </ul>
+          <p><strong>Cuelgues y rendimiento</strong></p>
+          <ul>
+            <li>Todas las peticiones de red tienen ya un tiempo límite. Antes, un motor AceStream inalcanzable (IP mal configurada, equipo apagado) o una web de listas que no respondiera dejaban Kodi congelado.</li>
+            <li>Las descargas tienen un tope de tamaño, así que una dirección que devolviera gigabytes ya no puede agotar la memoria del equipo.</li>
+            <li>La limpieza de caché ya no recorre el disco entero. Antes, si no encontraba la carpeta de caché, escaneaba C:\ (o toda la memoria en Android) al terminar cada reproducción. Ahora comprueba las rutas conocidas y como mucho busca dentro de la carpeta del motor.</li>
+            <li>La versión del motor se consulta una sola vez, no en cada comprobación, así que el menú principal y el arranque de la reproducción van bastante más rápido.</li>
+            <li>Los códigos QR se generan una única vez y se reutilizan. Antes se reescribía un PNG por canal cada vez que se pintaba la lista.</li>
+            <li>Pintar una lista larga ya no relee los ajustes una vez por canal, ni reescribe el fichero de configuración al terminar cada reproducción.</li>
+          </ul>
+          <p><strong>Integridad de los datos</strong></p>
+          <ul>
+            <li>El historial se escribe de forma atómica, así que si Kodi se cierra a mitad el fichero anterior queda intacto en vez de corromperse. Y si aun así apareciera dañado, el addon lo ignora en vez de fallar al abrir el historial.</li>
+            <li>Un código QR a medio escribir ya no queda cacheado como válido, se regenera.</li>
+          </ul>
+          <p><strong>Compatibilidad</strong></p>
+          <ul>
+            <li>Eliminado distutils y las llamadas a setDaemon(), ambos retirados en Python 3.12. El addon habría dejado de arrancar en las próximas versiones de Kodi.</li>
+            <li>Eliminada la dependencia script.module.six (compatibilidad con Python 2, ya innecesaria) y declarada la dependencia de xbmc.python 3.0.0.</li>
+            <li>Los ajustes internos del addon (último ID, última búsqueda, ruta de la caché) ya se declaran como es debido. En Kodi 19 y posteriores podían no llegar a guardarse, y por eso "recordar el último ID" fallaba entre sesiones.</li>
+          </ul>
+          <p><strong>Correcciones</strong></p>
+          <ul>
+            <li>Al reenviar un enlace a StreamNinja ya no aparece un aviso de "reproducción fallida" fantasma encima del vídeo que sí se estaba abriendo.</li>
+            <li>Un .torrent o un magnet inválido enviado por otro addon ya avisa en vez de no hacer absolutamente nada.</li>
+            <li>Los enlaces sin nombre ya no impiden reproducir. Antes, si el motor no daba título, la reproducción moría en silencio antes de empezar.</li>
+            <li>En OSMC, LibreELEC y Raspberry el motor podía darse por no arrancado y agotar la espera aunque ya estuviera funcionando.</li>
+            <li>El motor arranca aunque esté instalado en una ruta con espacios (por ejemplo un usuario de Windows llamado "Juan Pérez"). Antes no arrancaba nunca.</li>
+            <li>Si en la dirección del motor hay algo raro (esquema, barra final, espacios, un puerto pegado) ahora se entiende igual, en vez de dejar el addon mudo.</li>
+            <li>Un servicio que no sea AceStream respondiendo en la dirección configurada (un router, por ejemplo) ya no provoca un error interno.</li>
+            <li>El OSD ya no impide reproducir con skins que no declaran su resolución. Antes, con uno de esos, no arrancaba ningún vídeo.</li>
+            <li>Se acabaron las notificaciones de error por duplicado. Al fallar el arranque de un enlace se mostraba un segundo error inventado por el intento de parar un stream que nunca llegó a existir.</li>
+            <li>El menú del addon abre al instante aunque el motor esté configurado en un equipo remoto apagado. Antes se quedaba bloqueado hasta diez segundos en cada apertura.</li>
+            <li>Reproducir desde el historial conserva el título, la carátula y la sinopsis. Antes se perdían y la entrada se degradaba a un código.</li>
+            <li>Una búsqueda sin resultados (o cancelada) ya no deja una lista fantasma con solo los encabezados de origen.</li>
+            <li>Al buscar por texto, si uno de los dos buscadores está caído ya no se pierde también el otro. Antes un fallo en el primero anulaba la búsqueda entera.</li>
+            <li>Una entrada defectuosa dentro de una lista ya no descarta la lista completa, se ignora esa y se cargan las demás.</li>
+            <li>Si la instalación del motor quedó a medias, intentar reproducir mostraba un fallo interno en vez del aviso correspondiente.</li>
+            <li>Los enlaces ass:// ya no dependen en exclusiva de Google DNS. Si está bloqueado, se prueba con Cloudflare.</li>
+            <li>Los fallos de búsqueda ya no se silencian. Si una lista falla por red o por formato queda registrado en el log, en vez de aparecer siempre como "no se han encontrado enlaces".</li>
+            <li>El historial reordena, lo último visto vuelve al principio. Se amplía a 20 elementos y ahora se puede borrar, entero o elemento a elemento, desde el menú contextual (vaciarlo del todo pide confirmación).</li>
+            <li>Las listas que traen carátula propia vuelven a mostrarla. Hasta ahora se descartaba y se ponía el icono del addon.</li>
+            <li>Detener el motor es ahora fiable. Se ha corregido un fallo que podía saltar si el motor terminaba justo en ese momento, y en Linux ya no se queda a medias cuando el sistema no admite el método habitual.</li>
+            <li>En Windows, cerrar el motor ya no abre una consola negra encima de Kodi.</li>
+            <li>La instalación del motor ya no se queda colgada para siempre si el servidor de descarga no responde, y ahora avisa si la descarga falla en vez de terminar en silencio.</li>
+            <li>Corregida la etiqueta de velocidad de descarga del OSD, que mostraba el texto de "Estado".</li>
+            <li>Un vídeo que se cortaba nada más arrancar dejaba un error interno y de paso no llegaba a limpiar la caché del motor.</li>
+            <li>El diálogo de progreso ya no se queda colgado en pantalla si algo falla mientras se abre el enlace.</li>
+            <li>Los mensajes de error del motor se muestran limpios, sin los símbolos sueltos que arrastraban.</li>
+            <li>El código QR solo se genera para los enlaces de verdad, no para los encabezados de origen de las listas.</li>
+            <li>Un valor mal escrito en la IP o el puerto del motor ya no impide que el addon arranque, se usa el puerto por omisión en vez de dejar de cargar.</li>
+            <li>Al vaciar el historial desde el menú contextual, la lista se refresca en el acto. Antes se quedaba en pantalla la lista ya borrada.</li>
+            <li>Las llamadas de otros addons ya no fallan si algún parámetro contiene el carácter '='.</li>
+          </ul>
+        </div>
+      </details>
+      <details class="guide-item">
+        <summary>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v6M12 2 9 5M12 2l3 3"/><rect x="3" y="8" width="18" height="13" rx="2.5"/><path d="M3 13h18"/></svg>
+          <span>EKHorus 1.3.2</span>
+        </summary>
+        <div class="guide-body">
+          <ul>
+            <li>Redirección a StreamNinja: ajuste nuevo que reenvía las llamadas de otros addons a horus al reproductor de StreamNinja, con protección anti-bucle.</li>
+            <li>Arreglado un fallo que impedía cargar el addon: el QR ahora usa pyqrcode (dependencia disponible) y es opcional.</li>
+            <li>Recuperado el diálogo de confirmación antes de abrir el motor AceStream en Android.</li>
+            <li>Cancelar la búsqueda ya no deja una entrada vacía.</li>
+            <li>Aviso al introducir un ID no válido, en vez de fallar en silencio.</li>
+            <li>Renombrado a EKHorus (adaptación para EspaKodi): nombre y enlaces de la comunidad. El id sigue siendo script.module.horus para no romper las llamadas de otros addons. Dependencia añadida: script.module.pyqrcode.</li>
+          </ul>
+        </div>
+      </details>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>Guía para EKHorus 1.5.0 (basado en Horus) · RubénSDFA1laberot · Comunidad en <a href="https://t.me/espakodi" rel="noopener">t.me/espakodi</a> · <a href="https://espatv.github.io/">EspaKodi</a></p>
+      <p class="disclaimer">En EKHorus no vas a encontrar ningún tipo de contenido: ni películas, ni series ni eventos deportivos.</p>
+    </div>
+  </footer>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <script>
+    'use strict';
+
+    const PALETTES = [
+      { id: 'teal', name: 'Teal', color: '#136b5e' },
+      { id: 'indigo', name: 'Índigo', color: '#37548f' },
+      { id: 'burgundy', name: 'Burdeos', color: '#8a3144' },
+      { id: 'forest', name: 'Bosque', color: '#356b3f' },
+      { id: 'terracotta', name: 'Terracota', color: '#a85534' },
+    ];
+
+    const ICON_CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>';
+
+    const $ = (sel, root = document) => root.querySelector(sel);
+
+    // Acceso a localStorage tolerante a fallos (modo privado, cookies bloqueadas,
+    // cuota llena o JSON corrupto) para que nada de esto rompa el arranque.
+    function lsGet(key) {
+      try { return localStorage.getItem(key); } catch { return null; }
+    }
+    function lsSet(key, val) {
+      try { localStorage.setItem(key, val); } catch { /* sin persistencia */ }
+    }
+    function lsGetJSON(key, fallback) {
+      try { const v = lsGet(key); return v ? JSON.parse(v) : fallback; } catch { return fallback; }
+    }
+
+    function boot() {
+      initTheme();
+      initPalette();
+      initA11y();
+      initCopy();
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', boot, { once: true });
+    } else {
+      boot();
+    }
+
+    // --- Tema (claro / oscuro / sistema por defecto) ---
+
+    function initTheme() {
+      const media = window.matchMedia('(prefers-color-scheme: dark)');
+      applyTheme();
+      media.addEventListener('change', () => {
+        if (!lsGet('theme')) applyTheme();
+      });
+      $('#theme-btn').addEventListener('click', () => {
+        const next = resolvedTheme() === 'dark' ? 'light' : 'dark';
+        lsSet('theme', next);
+        applyTheme();
+      });
+    }
+
+    function resolvedTheme() {
+      const pref = lsGet('theme');
+      if (pref === 'light' || pref === 'dark') return pref;
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+
+    function applyTheme() {
+      document.documentElement.setAttribute('data-theme', resolvedTheme());
+    }
+
+    // --- Paleta de color ---
+
+    function initPalette() {
+      const saved = lsGet('palette');
+      if (PALETTES.some((p) => p.id === saved)) applyPalette(saved);
+
+      const pop = $('#palette-pop');
+      pop.innerHTML = PALETTES.map((p) => `
+        <button class="swatch" type="button" role="menuitemradio" data-palette="${p.id}">
+          <span class="dot" style="background:${p.color}"></span>${p.name}
+          <span class="check">${ICON_CHECK}</span>
+        </button>`).join('');
+      markPalette();
+
+      pop.querySelectorAll('[data-palette]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          applyPalette(btn.dataset.palette);
+          lsSet('palette', btn.dataset.palette);
+          markPalette();
+          togglePopover($('#palette-btn'), pop, false);
+        });
+      });
+
+      bindPopover($('#palette-btn'), pop);
+    }
+
+    function applyPalette(id) {
+      document.documentElement.setAttribute('data-palette', id);
+    }
+
+    function markPalette() {
+      const current = document.documentElement.getAttribute('data-palette');
+      $('#palette-pop').querySelectorAll('[data-palette]').forEach((btn) => {
+        btn.setAttribute('aria-checked', String(btn.dataset.palette === current));
+      });
+    }
+
+    // --- Accesibilidad ---
+
+    function initA11y() {
+      const saved = new Set(lsGetJSON('a11y', []));
+
+      const root = document.documentElement;
+      document.querySelectorAll('[data-a11y]').forEach((btn) => {
+        const cls = btn.dataset.a11y;
+        const on = saved.has(cls);
+        root.classList.toggle(cls, on);
+        btn.setAttribute('aria-pressed', String(on));
+
+        btn.addEventListener('click', () => {
+          const active = root.classList.toggle(cls);
+          btn.setAttribute('aria-pressed', String(active));
+          const current = new Set(lsGetJSON('a11y', []));
+          active ? current.add(cls) : current.delete(cls);
+          lsSet('a11y', JSON.stringify([...current]));
+        });
+      });
+
+      bindPopover($('#a11y-btn'), $('#a11y-panel'));
+    }
+
+    // --- Popovers ---
+
+    function bindPopover(btn, pop) {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        togglePopover(btn, pop, pop.hasAttribute('hidden'));
+      });
+      // Un clic dentro del popover no debe cerrarlo (p. ej. para activar varios toggles seguidos).
+      pop.addEventListener('click', (e) => e.stopPropagation());
+    }
+
+    function togglePopover(btn, pop, show) {
+      if (show) closeAllPopovers();
+      pop.toggleAttribute('hidden', !show);
+      btn.setAttribute('aria-expanded', String(show));
+    }
+
+    function closeAllPopovers() {
+      document.querySelectorAll('.popover').forEach((pop) => {
+        if (pop.hasAttribute('hidden')) return;
+        pop.setAttribute('hidden', '');
+        const btn = document.getElementById(pop.getAttribute('id') === 'palette-pop' ? 'palette-btn' : 'a11y-btn');
+        if (btn) btn.setAttribute('aria-expanded', 'false');
+      });
+    }
+
+    document.addEventListener('click', closeAllPopovers);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeAllPopovers(); });
+
+    // --- Copiar (delegado) ---
+
+    function initCopy() {
+      document.addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-copy]');
+        if (!btn) return;
+        copy(btn.dataset.copy, btn.dataset.copyLabel || 'Copiado');
+      });
+    }
+
+    async function copy(text, okMsg) {
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast(okMsg);
+      } catch {
+        showToast('No se pudo copiar');
+      }
+    }
+
+    let toastTimer;
+    function showToast(msg) {
+      const el = $('#toast');
+      el.textContent = msg;
+      el.hidden = false;
+      requestAnimationFrame(() => el.classList.add('show'));
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        el.classList.remove('show');
+        setTimeout(() => { el.hidden = true; }, 200);
+      }, 2200);
+    }
+  </script>
+</body>
+</html>
