@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="script.module.horus" name="EKHorus" version="1.3.2" provider-name="Caperucitaferoz, RubénSDFA1laberot">
+<addon id="script.module.horus" name="EKHorus" version="1.5.0" provider-name="RubénSDFA1laberot">
     <requires>
-        <import addon="script.module.six" />
+        <import addon="xbmc.python" version="3.0.0" />
         <import addon="script.module.pyqrcode" />
     </requires>
     <extension point="xbmc.python.pluginsource" library="default.py">
         <provides>executable</provides>
     </extension>
     <extension point="xbmc.addon.metadata">
-        <description>EKHorus: modificación de Horus adaptada a EspaKodi.
+        <summary lang="es_ES">Reproductor AceStream para Kodi</summary>
+        <summary lang="en_GB">AceStream player for Kodi</summary>
+        <description>EKHorus: reproductor AceStream para Kodi, basado en Horus (Caperucitaferoz) y adaptado para EspaKodi por RubénSDFA1laberot (pulsa para ver los cambios).
 
 "Señor de sus ojos"
 "Unificador de las dos tierras"
@@ -16,36 +18,102 @@
 "El de los dos ojos"
         </description>
         <disclaimer>En Horus no vais a encontrar ningún tipo de contenido: ni películas, ni series ni eventos deportivos.</disclaimer>
+        <license>GPL-3.0-or-later</license>
         <platform>all</platform>
         <assets>
               <icon>icon.png</icon>
               <fanart>fanart.jpg</fanart>
         </assets>
         <news>
-            EKHorus: diferencias respecto al Horus original de Caperucitaferoz (1.1.9).
+            EKHorus para Kodi: reproductor AceStream basado en Horus (Caperucitaferoz), adaptado para EspaKodi por RubénSDFA1laberot.
 
-            Enlaces y búsqueda:
-            - Soporte de enlaces ass:// (se resuelven por DNS sobre elcano.top y se decodifican en base64/gzip, incluyendo listas anidadas).
-            - Búsqueda directa por texto, sin URL, en acestreamsearch.net y search-ace.stream.
-            - Buscar varias fuentes a la vez separando las direcciones con ; (fusiona y elimina duplicados).
-            - Nuevos formatos de lista reconocidos: pastebin/.txt (nombre e ID por líneas), elcano y páginas vercel.app / netlify.app.
+            Novedades de EKHorus 1.5.0:
 
-            Motor AceStream (Android):
-            - Segundo motor org.free.aceserve (aceserve) seleccionable con el ajuste Motor ace, con sus propias rutas de caché e intents de lanzamiento y reproducción.
+            Menú principal
+            - Ajustes pasa a ser la primera entrada, seguida de dos menús nuevos, Descargar APKs y EspaKodi Addons.
 
-            Reproducción e interfaz:
-            - Ajuste Mostrar QR: genera un código QR del enlace acestream:// como carátula del elemento (dependencia nueva: script.module.pyqrcode).
-            - Listitems con la API moderna getVideoInfoTag en lugar de setInfo.
-            - Al introducir un ID a mano exige un hash de 40 caracteres y avisa si no es válido (el original aceptaba el texto tal cual).
-            - Ya no fuerza el refresco del contenedor tras reproducir.
+            Descargar APKs
+            - Menú nuevo para descargar e instalar AceStream, AceServe, VLC y EspaKodi Warp, los APK que hacen falta en un Fire TV o un TV box, donde pasar ficheros al aparato es un engorro. Se bajan a la carpeta del dispositivo que elijas cada vez. Son versiones de 32 bits, las que instalan casi todos estos aparatos, y un aviso en el propio menú lo explica y enlaza a las de 64 bits.
+            - Antes de empezar se comprueba que se pueda escribir en la carpeta, no cuando ya llevas 100 MB descargados. El archivo solo pasa a llamarse .apk si la descarga termina entera, y luego se comprueba que no esté corrupto. Si el disco se queda sin espacio a mitad, la descarga avisa en lugar de dejar un APK truncado que parece bueno.
+            - El botón Cancelar detiene la descarga y no deja archivos a medias en la carpeta.
+            - Si el APK ya estaba descargado, se ofrece reutilizarlo en vez de bajarlo otra vez. Si el que había estaba dañado, se descarga de nuevo sin preguntar. Dos pulsaciones seguidas ya no se pisan entre ellas.
+            - En Android se ofrece instalar el APK directamente. En Kodi 22 o posterior abre el instalador del sistema, y con root puede usar pm install. Cuando el sistema no lo permite, se dan las instrucciones para instalarlo a mano desde un gestor de archivos, con un acceso directo a los ajustes de orígenes desconocidos.
 
-            Integración con otros addons:
-            - Ajuste Redirigir a StreamNinja las llamadas de otros addons: reenvía las llamadas externas al reproductor de StreamNinja, con protección anti-bucle.
+            EspaKodi Addons
+            - Menú nuevo con el ecosistema de addons de EspaKodi (EspaTV, EspaDaily, AtresDaily, StreamNinja, TopZilla, loiolog, Flow FavManager, loiolink, Elementum y youtube-dl), que muestra cuáles tienes instalados, cuáles deshabilitados y cuáles no.
+            - Los instala solos. Descarga el repositorio, lo registra y lanza la instalación, con reintentos y descarga directa del zip si Kodi se atasca. Si aun así falla, muestra las instrucciones para hacerlo a mano.
+            - Incluye el repositorio de Elementum, así que no hace falta añadir ninguna fuente. También se instala youtube-dl, desde el repositorio oficial de Kodi.
+            - Accesos al repositorio unificado y a la última versión del APK de EspaKodi.
+            - El menú comprueba qué addons hay instalados sin dejar un error en el registro de Kodi por cada uno que falte.
+            - Los repositorios que se descargan se validan antes de extraerse, y se rechaza cualquier ZIP con rutas manipuladas que intentara escribir fuera de la carpeta de addons.
 
-            Identidad:
-            - Renombrado a EKHorus (adaptación para EspaKodi), con RubénSDFA1laberot como coautor. El id sigue siendo script.module.horus para no romper las llamadas de otros addons. Dependencia añadida: script.module.pyqrcode.
+            Ajustes y descargas
+            - En los ajustes, los tres controles más usados (redirección a StreamNinja, reproductor externo y motor ace) pasan a estar los primeros.
+            - Arreglada la barra de progreso de las descargas, que saltaba al 100% al instante y se quedaba clavada. Afectaba también a la instalación del motor AceStream.
+
+            Novedades de EKHorus 1.4.0:
+
+            Seguridad
+            - Eliminado el uso de eval() en todo el addon. Antes, una lista de canales cargada desde una web podía ejecutar código arbitrario en el equipo, porque lo descargado se interpretaba como código Python. Ahora se interpreta como datos (JSON o literales) y nunca se ejecuta. Esto también afectaba a las cabeceras que llegan de otros addons, a los ajustes guardados y a los parámetros de las llamadas externas.
+
+            Cuelgues y rendimiento
+            - Todas las peticiones de red tienen ya un tiempo límite. Antes, un motor AceStream inalcanzable (IP mal configurada, equipo apagado) o una web de listas que no respondiera dejaban Kodi congelado.
+            - Las descargas tienen un tope de tamaño, así que una dirección que devolviera gigabytes ya no puede agotar la memoria del equipo.
+            - La limpieza de caché ya no recorre el disco entero. Antes, si no encontraba la carpeta de caché, escaneaba C:\ (o toda la memoria en Android) al terminar cada reproducción. Ahora comprueba las rutas conocidas y como mucho busca dentro de la carpeta del motor.
+            - La versión del motor se consulta una sola vez, no en cada comprobación, así que el menú principal y el arranque de la reproducción van bastante más rápido.
+            - Los códigos QR se generan una única vez y se reutilizan. Antes se reescribía un PNG por canal cada vez que se pintaba la lista.
+            - Pintar una lista larga ya no relee los ajustes una vez por canal, ni reescribe el fichero de configuración al terminar cada reproducción.
+
+            Integridad de los datos
+            - El historial se escribe de forma atómica, así que si Kodi se cierra a mitad el fichero anterior queda intacto en vez de corromperse. Y si aun así apareciera dañado, el addon lo ignora en vez de fallar al abrir el historial.
+            - Un código QR a medio escribir ya no queda cacheado como válido, se regenera.
+
+            Compatibilidad
+            - Eliminado distutils y las llamadas a setDaemon(), ambos retirados en Python 3.12. El addon habría dejado de arrancar en las próximas versiones de Kodi.
+            - Eliminada la dependencia script.module.six (compatibilidad con Python 2, ya innecesaria) y declarada la dependencia de xbmc.python 3.0.0.
+            - Los ajustes internos del addon (último ID, última búsqueda, ruta de la caché) ya se declaran como es debido. En Kodi 19 y posteriores podían no llegar a guardarse, y por eso "recordar el último ID" fallaba entre sesiones.
+
+            Correcciones
+            - Al reenviar un enlace a StreamNinja ya no aparece un aviso de "reproducción fallida" fantasma encima del vídeo que sí se estaba abriendo.
+            - Un .torrent o un magnet inválido enviado por otro addon ya avisa en vez de no hacer absolutamente nada.
+            - Los enlaces sin nombre ya no impiden reproducir. Antes, si el motor no daba título, la reproducción moría en silencio antes de empezar.
+            - En OSMC, LibreELEC y Raspberry el motor podía darse por no arrancado y agotar la espera aunque ya estuviera funcionando.
+            - El motor arranca aunque esté instalado en una ruta con espacios (por ejemplo un usuario de Windows llamado "Juan Pérez"). Antes no arrancaba nunca.
+            - Si en la dirección del motor hay algo raro (esquema, barra final, espacios, un puerto pegado) ahora se entiende igual, en vez de dejar el addon mudo.
+            - Un servicio que no sea AceStream respondiendo en la dirección configurada (un router, por ejemplo) ya no provoca un error interno.
+            - El OSD ya no impide reproducir con skins que no declaran su resolución. Antes, con uno de esos, no arrancaba ningún vídeo.
+            - Se acabaron las notificaciones de error por duplicado. Al fallar el arranque de un enlace se mostraba un segundo error inventado por el intento de parar un stream que nunca llegó a existir.
+            - El menú del addon abre al instante aunque el motor esté configurado en un equipo remoto apagado. Antes se quedaba bloqueado hasta diez segundos en cada apertura.
+            - Reproducir desde el historial conserva el título, la carátula y la sinopsis. Antes se perdían y la entrada se degradaba a un código.
+            - Una búsqueda sin resultados (o cancelada) ya no deja una lista fantasma con solo los encabezados de origen.
+            - Al buscar por texto, si uno de los dos buscadores está caído ya no se pierde también el otro. Antes un fallo en el primero anulaba la búsqueda entera.
+            - Una entrada defectuosa dentro de una lista ya no descarta la lista completa, se ignora esa y se cargan las demás.
+            - Si la instalación del motor quedó a medias, intentar reproducir mostraba un fallo interno en vez del aviso correspondiente.
+            - Los enlaces ass:// ya no dependen en exclusiva de Google DNS. Si está bloqueado, se prueba con Cloudflare.
+            - Los fallos de búsqueda ya no se silencian. Si una lista falla por red o por formato queda registrado en el log, en vez de aparecer siempre como "no se han encontrado enlaces".
+            - El historial reordena, lo último visto vuelve al principio. Se amplía a 20 elementos y ahora se puede borrar, entero o elemento a elemento, desde el menú contextual (vaciarlo del todo pide confirmación).
+            - Las listas que traen carátula propia vuelven a mostrarla. Hasta ahora se descartaba y se ponía el icono del addon.
+            - Detener el motor es ahora fiable. Se ha corregido un fallo que podía saltar si el motor terminaba justo en ese momento, y en Linux ya no se queda a medias cuando el sistema no admite el método habitual.
+            - En Windows, cerrar el motor ya no abre una consola negra encima de Kodi.
+            - La instalación del motor ya no se queda colgada para siempre si el servidor de descarga no responde, y ahora avisa si la descarga falla en vez de terminar en silencio.
+            - Corregida la etiqueta de velocidad de descarga del OSD, que mostraba el texto de "Estado".
+            - Un vídeo que se cortaba nada más arrancar dejaba un error interno y de paso no llegaba a limpiar la caché del motor.
+            - El diálogo de progreso ya no se queda colgado en pantalla si algo falla mientras se abre el enlace.
+            - Los mensajes de error del motor se muestran limpios, sin los símbolos sueltos que arrastraban.
+            - El código QR solo se genera para los enlaces de verdad, no para los encabezados de origen de las listas.
+            - Un valor mal escrito en la IP o el puerto del motor ya no impide que el addon arranque, se usa el puerto por omisión en vez de dejar de cargar.
+            - Al vaciar el historial desde el menú contextual, la lista se refresca en el acto. Antes se quedaba en pantalla la lista ya borrada.
+            - Las llamadas de otros addons ya no fallan si algún parámetro contiene el carácter '='.
+
+            Novedades de EKHorus 1.3.2:
+            - Redirección a StreamNinja: ajuste nuevo que reenvía las llamadas de otros addons a horus al reproductor de StreamNinja, con protección anti-bucle.
+            - Arreglado un fallo que impedía cargar el addon: el QR ahora usa pyqrcode (dependencia disponible) y es opcional.
+            - Recuperado el diálogo de confirmación antes de abrir el motor AceStream en Android.
+            - Cancelar la búsqueda ya no deja una entrada vacía.
+            - Aviso al introducir un ID no válido, en vez de fallar en silencio.
+            - Renombrado a EKHorus (adaptación para EspaKodi): nombre y enlaces de la comunidad. El id sigue siendo script.module.horus para no romper las llamadas de otros addons. Dependencia añadida: script.module.pyqrcode.
         </news>
-        <forum>https://t.me/espakodi
-        https://espatv.github.io/ekstreaming</forum>
+        <forum>https://t.me/espakodi</forum>
+        <website>https://espatv.github.io/ekstreaming</website>
     </extension>
 </addon>
