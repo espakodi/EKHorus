@@ -18,7 +18,7 @@
           </assets>
       </extension>
   </addon>
-  <addon id="script.module.horus" name="EKHorus" version="2.0.0" provider-name="RubénSDFA1laberot">
+  <addon id="script.module.horus" name="EKHorus" version="2.0.1" provider-name="RubénSDFA1laberot">
       <requires>
           <import addon="xbmc.python" version="3.0.0" />
           <import addon="script.module.pyqrcode" />
@@ -33,7 +33,7 @@
       <extension point="xbmc.addon.metadata">
           <summary lang="es_ES">Reproductor AceStream para Kodi</summary>
           <summary lang="en_GB">AceStream player for Kodi</summary>
-          <description>EKHorus: reproductor AceStream para Kodi, basado en Horus (Caperucitaferoz) y adaptado para EspaKodi por RubénSDFA1laberot (pulsa para ver los cambios).
+          <description>EKHorus: reproductor AceStream para Kodi, basado en Horus (Caperucitaferoz) y adaptado para EspaKodi por RubénSDFA1laberot (una vez instalado el addon, el historial de cambios sale aquí mismo al pulsar).
 
   "Señor de sus ojos"
   "Unificador de las dos tierras"
