@@ -1,8 +1,6 @@
 # EKHorus - Repositorio para Kodi
 
-Reproductor AceStream para Kodi (adaptación de Horus para EspaKodi).
-
-Repositorio e instrucciones: https://espakodi.github.io/EKHorus/
+Fuente e información: https://espakodi.github.io/EKHorus/
 
 ## Instalación
 1. Kodi -> Explorador de archivos -> Añadir fuente -> `https://espakodi.github.io/EKHorus/`
